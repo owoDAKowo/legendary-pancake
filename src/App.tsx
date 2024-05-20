@@ -1,6 +1,11 @@
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import './App.css';
 import NavBar from './components/NavBar';
+import AuthPage from './pages/auth';
+import Home from './pages/home';
+import Rated from './pages/rated';
+
+
 
 function App() {
   return (
@@ -8,9 +13,9 @@ function App() {
       <Router>
         <NavBar/>
         <Routes>
-          <Route path="/" element={<h1>Home</h1>} />
-          <Route path="/auth" element={<h1>Auth</h1>} />
-          <Route path="/rated" element={<h1>Rated</h1>} />
+          <Route path="/" element={<Home/>} />
+          <Route path="/auth" element={<AuthPage />} /> // Use AuthPage as a child element
+          <Route path="/rated" element={<Rated/>} />
         </Routes>
       </Router>
     </div>

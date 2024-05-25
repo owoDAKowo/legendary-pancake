@@ -1,6 +1,6 @@
 import { Card, Col, Row } from "antd";
 import { DisplayType } from ".";
-// import Meta from Card.Meta;
+import { Link } from "react-router-dom";
 
 const { Meta } = Card;
 
@@ -17,27 +17,26 @@ interface DisplayData {
 interface Props {
     data: DisplayData[];
     displayType: DisplayType;
-
 }
 
-export const ColumnDisplay = ({ data, displayType }: Props) => {
+export const ColumnDisplay = ({ data, displayType}: Props) => {
     return (
-        <div>
-            <Row gutter={[16, 16]}>
-                {data.map((item) => (
-                    <Col span={8} key={item.id}>
-                        <Card
-                            hoverable
-                            cover={<img alt={item.title || item.name} src={`https://image.tmdb.org/t/p/original/${item.poster_path}`} />}
-                        >
-                            <Meta
-                                title={displayType === DisplayType.Movies ? item.title : item.name}
-                                description={`Дата выхода: ${item.release_date}`}
-                            />
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
-        </div>
+        <Row gutter={16}>
+            {data.map((item) => (
+                <Col span={4}>
+                    <Link to={`/${displayType===DisplayType.Movies ? 'movie':'tvshow'}/${item.id}`}>
+                    <Card
+                        hoverable
+                        cover={<img alt = {item.title || item.name} src = {`https://image.tmdb.org/t/p/original/${item.poster_path}`} />}
+                    >
+                        <Meta
+                        title={displayType === DisplayType.Movies ? item.title : item.name}
+                            description={item.overview.slice(0, 200)+'...'}
+                        />
+                    </Card>
+                    </Link>
+                </Col>
+            ))}
+        </Row>
     );
 };

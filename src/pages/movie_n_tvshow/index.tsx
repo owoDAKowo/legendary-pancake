@@ -1,23 +1,54 @@
-import { FC, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { FC, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { fetchMovieDetails, fetchTvShowDetails } from "./query";
+import { fetchDetails } from "./query";
 import { Col, Rate, Row, Spin, Tag } from "antd";
 import { Card, List } from 'antd';
 import YouTube from "react-youtube";
+import { rateContent } from "./mutation";
+import {toast} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-export const Movie:FC = () => {
+const onSuccess = () => {
+    toast.success('Успешно оценено!', {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+    });
+
+}
+const onError = () => {
+    toast.error('Ошибка при оценке!', {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+    });
+}
+
+export const Movie: FC = () => {
     const { id } = useParams<string>();
     const queryClient = useQueryClient();
-
-    if (!id) {
-        return <div>Что-то тут не так...</div>;
-    }
+    const [rating, setRating] = useState<number>(0);
 
     const { data, isLoading } = useQuery({
         queryKey: ['movie'],
-        queryFn: () => fetchMovieDetails(id),
+        queryFn: () => fetchDetails(id || '', 'movie'),
         refetchOnWindowFocus: false
+    });
+
+    const { mutate: rateMovieMutation } = useMutation({
+        mutationKey: ['rateMovie'],
+        mutationFn: (id: string) => rateContent(id, rating, 'movie'),
+        onSuccess,
+        onError,
     });
 
     useEffect(() => {
@@ -25,6 +56,10 @@ export const Movie:FC = () => {
             queryClient.setQueryData(['movie'], null);
         };
     }, []);
+
+    if (!id) {
+        return <div>Что-то тут не так...</div>;
+    }
 
     return (
         isLoading || !data ? (
@@ -43,7 +78,7 @@ export const Movie:FC = () => {
                         <strong> Описание: </strong>
                         <p>{data.overview}</p>
                         <hr />
-                        <div className='genere'>
+                        <div>
                             <span className='genereTitle'>
                                 <strong>Жанры: </strong>
                             </span>
@@ -51,7 +86,10 @@ export const Movie:FC = () => {
                                 <Tag key={genre.id}>{genre.name}</Tag>
                             ))}
                         </div>
-                        <Rate className='rate' value={data.vote_average / 2} />
+                        <Rate className='rate' count={10} value={rating ? rating : Math.round(data.vote_average)} onChange={(e) => {
+                            setRating(e);
+                            rateMovieMutation(id)
+                        }} /> {rating ? rating : Math.round(data.vote_average)}/10
                         <hr />
                         {data.videos.results.length === 0 ? (
                             <strong>Трейлера нет </strong>
@@ -71,15 +109,19 @@ export const Movie:FC = () => {
 export const TvShow: FC = () => {
     const { id } = useParams<string>();
     const queryClient = useQueryClient();
-
-    if (!id) {
-        return <div>Что-то тут не так...</div>;
-    }
+    const [rating, setRating] = useState<number>(0);
 
     const { data, isLoading } = useQuery({
         queryKey: ['tvshow'],
-        queryFn: () => fetchTvShowDetails(id),
+        queryFn: () => fetchDetails(id || '', 'tv'),
         refetchOnWindowFocus: false
+    });
+
+    const { mutate: rateTvShow } = useMutation({
+        mutationKey: ['rateMovie'],
+        mutationFn: (id: string) => rateContent(id, rating, 'tv'),
+        onSuccess,
+        onError,
     });
 
     useEffect(() => {
@@ -87,6 +129,10 @@ export const TvShow: FC = () => {
             queryClient.setQueryData(['tvshow'], null);
         };
     }, []);
+
+    if (!id) {
+        return <div>Что-то тут не так...</div>;
+    }
 
     return (
         isLoading || !data ? (
@@ -113,7 +159,10 @@ export const TvShow: FC = () => {
                                 <Tag key={genre.id}>{genre.name}</Tag>
                             ))}
                         </div>
-                        <Rate className='rate' value={data.vote_average / 2} />
+                        <Rate className='rate' count={10} value={rating ? rating : Math.round(data.vote_average)} onChange={(e) => {
+                            setRating(e);
+                            rateTvShow(id)
+                        }} /> {rating ? rating : Math.round(data.vote_average)}/10
                         <hr />
                         {data.videos.results.length === 0 ? (
                             <strong>Трейлера нет </strong>
@@ -125,21 +174,21 @@ export const TvShow: FC = () => {
                         )}
                         <hr />
                         <List
-                        grid={{
-                        gutter: 16,
-                        xs: 1,
-                        sm: 2,
-                        md: 4,
-                        lg: 4,
-                        xl: 6,
-                        xxl: 3,
-                        }}
-                        dataSource={data.seasons}
-                        renderItem={(season: any) => (
-                        <List.Item>
-                            <Card title={`Сезон ${season.season_number}`}>Эпизодов {season.episode_count}</Card>
-                        </List.Item>
-                        )}/>
+                            grid={{
+                                gutter: 16,
+                                xs: 1,
+                                sm: 2,
+                                md: 4,
+                                lg: 4,
+                                xl: 6,
+                                xxl: 3,
+                            }}
+                            dataSource={data.seasons}
+                            renderItem={(season: any) => (
+                                <List.Item>
+                                    <Card title={`Сезон ${season.season_number}`}>Эпизодов {season.episode_count}</Card>
+                                </List.Item>
+                            )} />
                     </Col>
                 </Row>
             </div>

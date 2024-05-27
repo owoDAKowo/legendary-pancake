@@ -67,13 +67,16 @@ export const Movie: FC = () => {
                 <Spin size="large" style={{ fontSize: 24 }} />
             </div>
         ) : (
-            <div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <Row>
                     <Col span={8}>
                         <img alt={`Постер ${data.title} был украден обезьянами`} width='85%' src={`https://image.tmdb.org/t/p/original${data.poster_path}`} />
                     </Col>
                     <Col span={15}>
                         <h1>{data.title}</h1>
+                        <hr />
+                        <strong> Дата выхода: </strong>
+                        <p>{data.release_date}</p>
                         <hr />
                         <strong> Описание: </strong>
                         <p>{data.overview}</p>
@@ -147,6 +150,9 @@ export const TvShow: FC = () => {
                     </Col>
                     <Col span={15}>
                         <h1>{data.name}</h1>
+                        <hr />
+                        <strong> Дата выхода: </strong>
+                        <p>{data.first_air_date}</p>
                         <hr />
                         <strong> Описание: </strong>
                         <p>{data.overview}</p>

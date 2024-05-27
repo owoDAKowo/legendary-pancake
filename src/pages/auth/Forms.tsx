@@ -8,7 +8,6 @@ export const RegistrationForm: React.FC = () => {
 
     const onFinishRegistration = (values: any) => {
         console.log('Registration form values:', values);
-        // Add your registration logic here
     };
 
     return (

@@ -3,12 +3,14 @@ import { Button, Spin } from 'antd';
 import { fetchData } from './query';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDisplay, DisplayType } from '../../components/ColumnDisplay';
+import { Navigate } from 'react-router-dom';
 
 const Home: React.FC = () => {
     const [displayType, setDisplayType] = useState<DisplayType>(() => {
         const savedDisplayType = localStorage.getItem('homeDisplayType');
         return savedDisplayType ? (savedDisplayType as DisplayType) : DisplayType.Movies;
     });
+    
 
     const { data: movieData, isLoading: isLoadingMovies } = useQuery({
         queryKey: ['moviesHome'],
@@ -27,6 +29,9 @@ const Home: React.FC = () => {
     const handleDisplayTypeChange = (type: DisplayType) => {
         setDisplayType(type);
     };
+    if(!localStorage.getItem('guest_session_id')){
+        return <Navigate to='/auth' />
+    };
     
     return (
         <div>
@@ -34,8 +39,10 @@ const Home: React.FC = () => {
                 <Button type={displayType === DisplayType.Movies ? 'primary' : 'default'} onClick={() => handleDisplayTypeChange(DisplayType.Movies)}>Movies</Button>
                 <Button type={displayType === DisplayType.TvShows ? 'primary' : 'default'} onClick={() => handleDisplayTypeChange(DisplayType.TvShows)}>TvShows</Button>
             </Button.Group>
-            <div style={{ margin: 20, display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-                    <ColumnDisplay data={displayType === DisplayType.Movies ? movieData?.results : tvShowData?.results} displayType={displayType} isLoading={displayType === DisplayType.Movies ? isLoadingMovies : isLoadingTvShows}/>
+            <div style={{ margin: '10px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+                    <ColumnDisplay data={displayType === DisplayType.Movies ? movieData?.results : tvShowData?.results}
+                            displayType={displayType} 
+                            isLoading={displayType === DisplayType.Movies ? isLoadingMovies : isLoadingTvShows}/>
             </div>
         </div>
     );

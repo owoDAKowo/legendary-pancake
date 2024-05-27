@@ -39,9 +39,9 @@ export const ColumnDisplay = ({ data, displayType, isLoading, isRated }: Props) 
     }
     
     return (
-        <Row gutter={16}>
+        <Row gutter={20} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
             {data.map(({ id, title, name, overview, poster_path, vote_average, rating}) => (
-                <Col span={4} key={id}>
+                <Col span={5} key={id}>
                     <Link to={`/${displayType === DisplayType.Movies ? 'movie' : 'tvshow'}/${id}`}>
                         <Card
                             key={id}

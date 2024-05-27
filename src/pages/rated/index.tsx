@@ -3,6 +3,7 @@ import { Button, Spin } from 'antd';
 import { fetchRated } from './query';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDisplay, DisplayType } from '../../components/ColumnDisplay';
+import { Navigate } from 'react-router-dom';
 
 const Rated: React.FC = () => {
     const [displayType, setDisplayType] = useState<DisplayType>(() => {
@@ -28,6 +29,10 @@ const Rated: React.FC = () => {
         setDisplayType(type);
     };
     
+    if(!localStorage.getItem('guest_session_id')){
+        return <Navigate to='/auth' />
+    };
+
     return (
         <div>
             <Button.Group style={{ marginTop: '10px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>

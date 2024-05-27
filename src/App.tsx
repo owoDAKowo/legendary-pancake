@@ -5,7 +5,7 @@ import AuthPage from './pages/auth';
 import Home from './pages/home';
 import Rated from './pages/rated';
 import { Movie, TvShow} from './pages/movie_n_tvshow';
-import { Layout } from 'antd';
+import { FloatButton, Layout } from 'antd';
 
 const {Content}=Layout;
 function App() {
@@ -23,6 +23,7 @@ function App() {
               <Route path="/tvshow/:id" element={<TvShow />} />
             </Routes>
           </Content>
+        <FloatButton.BackTop />
         </Layout>
       </Router>
     </div>
